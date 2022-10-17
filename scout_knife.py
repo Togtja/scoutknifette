@@ -4,6 +4,8 @@ import sys
 import os
 from typing import Tuple
 import requests  # Need to be pip installed
+import signal
+
 
 taxa = sys.argv[1]
 max_size = 10           # Max cocurrent running children
@@ -12,24 +14,11 @@ max_sub_process = 100   # To max batch (including)
 children = []           # List of sub_process children
 sleep_time = 60*30   # How often to check in on the children in seconds
 webhook_url = None
-
-
-with open(".config", "r") as config_file:
-    for config in config_file.readlines():
-        conf, val = config.split("=")
-        if conf == "webhook_url":
-            webhook_url = val.strip()
-        elif conf == "max_size":
-            max_size = int(val)
-        elif conf == "sub_process":
-            sub_process = int(val)
-        elif conf == "max_sub_process":
-            max_sub_process = int(val)
-        elif conf == "sleep_time":
-            sleep_time = int(val)
+completed = False
 
 
 def send_message(message: str):
+    global webhook_url
     print(message)
     if webhook_url is None:
         return
@@ -49,6 +38,39 @@ def send_message(message: str):
 
     r = requests.post(webhook_url, headers=headers, json=json_data, data=data)
     print(r.status_code, r.reason)
+
+
+def exit_now(sig, frame):
+    send_message("I am exiting gracefully, however all batches will continue")
+    sys.exit(0)
+
+
+def exit_soon(sig, frame):
+    global children
+    global completed
+    completed = True
+    send_message(f"I am exiting gracefully, as soon as all batches finishes {children}")
+
+
+signal.signal(signal.SIGINT, exit_now)
+signal.signal(signal.SIGTERM, exit_now)
+signal.signal(signal.SIGUSR1, exit_soon)
+
+with open(".config", "r") as config_file:
+    for config in config_file.readlines():
+        conf, val = config.split("=")
+        if conf == "webhook_url":
+            webhook_url = val.strip()
+        elif conf == "max_size":
+            max_size = int(val)
+        elif conf == "sub_process":
+            sub_process = int(val)
+        elif conf == "max_sub_process":
+            max_sub_process = int(val)
+        elif conf == "sleep_time":
+            sleep_time = int(val)
+
+start_nr = sub_process
 
 
 def squeue() -> Tuple[str, str, str, str, str, str, str, str]:
@@ -106,7 +128,6 @@ c.wait()
 
 send_message(f"{taxa} is clean")
 
-completed = False
 while True:
     alive_jobs = []
     children_cpy = children
@@ -130,4 +151,4 @@ while True:
     time.sleep(sleep_time)
 
 
-send_message("All 100 ScoutKnives have been Knife Scouted :) ")
+send_message(f"All from {start_nr} to {sub_process} {taxa} have been Knife Scouted :) ")
