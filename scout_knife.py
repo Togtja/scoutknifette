@@ -29,6 +29,7 @@ with open(".config", "r") as config_file:
 
 
 def send_message(message: str):
+    print(message)
     if webhook_url is None:
         return
     # Send message a post request to the webhook_url with message as content
