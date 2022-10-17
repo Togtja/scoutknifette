@@ -19,13 +19,13 @@ with open(".config", "r") as config_file:
         if conf == "webhook_url":
             webhook_url = val
         elif conf == "max_size":
-            max_size = val
+            max_size = int(val)
         elif conf == "sub_process":
-            sub_process = val
+            sub_process = int(val)
         elif conf == "max_sub_process":
-            max_sub_process = val
+            max_sub_process = int(val)
         elif conf == "sleep_time":
-            sleep_time = val
+            sleep_time = int(val)
 
 
 def send_message(message: str):

@@ -18,7 +18,7 @@ To use the config you have to create a `.config` file in the working directory. 
 
 ### webhook_url
 
-Default Value: `None`
+Default Value: `None`, Type: `str`
 
 Example in `.config`: `webhook_url=https://discord.com/api/webhooks/{webhook_id}/{token}`
 
@@ -57,7 +57,7 @@ At the moment it is only tested with the discord webhook api.
 
 ### max_size
 
-Default value: `10`
+Default value: `10`, Type: `int`
 
 Example in `.config`: `max_size=10`
 
@@ -65,7 +65,7 @@ This is how many sub_process to run concurrently.
 
 ### sub_process
 
-Default value: `1`
+Default value: `1`, Type: `int`
 
 Example in `.config`: `sub_process=1`
 
@@ -73,7 +73,7 @@ This is the starting point of the id of the sub process
 
 ### max_sub_process
 
-Default value: `100`
+Default value: `100`, Type: `int`
 
 Example in `.config`: `max_sub_process=100`
 
@@ -81,7 +81,7 @@ So it will create a process with id starting from `sub_process` and it will run 
 
 ### sleep_time
 
-Default value: `1800` (30 minutes)
+Default value: `1800` (30 minutes), Type: `int`
 
 Example in `.config`: `sleep_time=1800`
 
