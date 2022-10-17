@@ -110,6 +110,8 @@ completed = False
 while True:
     alive_jobs = []
     children_cpy = children
+    for jobid, partition, name, user, st, _, nodes, nodelist in squeue():
+        alive_jobs.append(jobid)
     for child in children_cpy:
         if child not in alive_jobs:
             send_message(f"{taxa} ScoutKnife nr {child[1]} finished")
@@ -124,9 +126,6 @@ while True:
         time.sleep(3)
     if len(children) == 0:
         break
-
-    for jobid, partition, name, user, st, _, nodes, nodelist in squeue():
-        alive_jobs.append(jobid)
 
     time.sleep(sleep_time)
 
