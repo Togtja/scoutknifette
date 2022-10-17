@@ -17,7 +17,7 @@ with open(".config", "r") as config_file:
     for config in config_file.readlines():
         conf, val = config.split("=")
         if conf == "webhook_url":
-            webhook_url = val
+            webhook_url = val.strip()
         elif conf == "max_size":
             max_size = int(val)
         elif conf == "sub_process":
@@ -117,7 +117,7 @@ while True:
 
     while len(children) < max_size and not completed:
         start_subprocess(sub_process, children, taxa)
-        send_message(f"Stared {taxa} ScoutKnife nr {sub_process}")
+        send_message(f"Started {taxa}{sub_process} jobid: {children[-1][0]}")
         sub_process += 1
         if sub_process > max_sub_process:
             completed = True

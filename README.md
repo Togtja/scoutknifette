@@ -24,7 +24,7 @@ Example in `.config`: `webhook_url=https://discord.com/api/webhooks/{webhook_id}
 
 The config is very basic and just change some of it parameters, the only one that does not have a default value is `webhook_url` so that one should be set if you want to support logging to a webhook.
 
-The request is a `POST` request	 with this header:
+The request is a `POST` request with this header:
 
 ```json
 {
