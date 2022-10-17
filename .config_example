@@ -2,4 +2,4 @@ webhook_url=url_to_a_webhook
 max_size=10
 sub_process=1
 max_sub_process=100
-sleep_time=108000
+sleep_time=1800

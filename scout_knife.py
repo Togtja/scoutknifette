@@ -10,7 +10,7 @@ max_size = 10           # Max cocurrent running children
 sub_process = 1         # starting batch 
 max_sub_process = 100   # To max batch (including)
 children = []           # List of sub_process children
-sleep_time = 60*60*30   # How often to check in on the children in seconds
+sleep_time = 60*30   # How often to check in on the children in seconds
 webhook_url = None
 
 with open(".config", "r") as config_file:

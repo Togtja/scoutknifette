@@ -81,8 +81,8 @@ So it will create a process with id starting from `sub_process` and it will run 
 
 ### sleep_time
 
-Default value: `108000` (30 minutes)
+Default value: `1800` (30 minutes)
 
-Example in `.config`: `sleep_time=108000`
+Example in `.config`: `sleep_time=1800`
 
 How long in seconds it will sleep in between checks to see if the processes are still running and spawn new once.
