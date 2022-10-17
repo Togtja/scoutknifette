@@ -54,8 +54,6 @@ def squeue() -> Tuple[str, str, str, str, str, str, str, str]:
     squeue = subprocess.Popen(["squeue"], stdout=subprocess.PIPE)
     squeue.wait()
     for line in squeue.stdout.readlines():
-        print(line.decode("utf-8"))
-        print(line.decode("utf-8").split())
         jobid, partition, name, user, st, time, nodes, nodelist = line.decode("utf-8").split()
         yield jobid, partition, name, user, st, time, nodes, nodelist
     return
