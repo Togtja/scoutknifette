@@ -13,6 +13,7 @@ children = []           # List of sub_process children
 sleep_time = 60*30   # How often to check in on the children in seconds
 webhook_url = None
 
+
 with open(".config", "r") as config_file:
     for config in config_file.readlines():
         conf, val = config.split("=")
@@ -70,7 +71,8 @@ def start_child(taxa: str, i: int) -> int:
     # sbatch /home/piamer/$taxa/ScoutKnifes/ScoutKnife_$i/$i.Submitter.pbs
     sbatch = subprocess.Popen(["sbatch", f"/home/piamer/{taxa}/ScoutKnifes/ScoutKnife_{i}/{i}.Submitter.pbs"])
     sbatch.wait()
-
+    # Wait for the log to update
+    time.sleep(5)
     for jobid, partition, name, user, st, _, nodes, nodelist in squeue():
         new_job = -1
         if user == os.getlogin():
@@ -96,7 +98,7 @@ def start_subprocess(sub_process: int, children: list, taxa: str):
     return
 
 
-send_message(f"I am cleaning {taxa}")
+send_message(f"I am PID: {os.getpid()}\nI am cleaning {taxa}")
 # Calls the cleaning command
 c = subprocess.Popen(["perl", "/home/piamer/4Pia/Step1_PartitionSedder.pl", taxa])
 # c = subprocess.Popen(["python", "example_clear.py", taxa])
