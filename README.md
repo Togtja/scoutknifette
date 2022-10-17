@@ -33,13 +33,23 @@ The request is a `POST` request	 with this header:
 }
 ```
 
-and with this as json body:
+and with this as json body if the link had `discord` in it:
 
 ```json
 {
     "content": message
 }
 ```
+
+this the link contains `slack`
+
+```json
+{
+    "text": message
+}
+```
+
+otherwise it just send the payload as a string (`message`) in the `request.post()` method's `data` parameter
 
 where `message` is a string from the script that it want to report typically errors or starting and ending of a batch
 

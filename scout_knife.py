@@ -33,14 +33,20 @@ def send_message(message: str):
     if webhook_url is None:
         return
     # Send message a post request to the webhook_url with message as content
-    data = {"content": message}
-
+    json_data = None
+    data = None
+    if "discord" in webhook_url:
+        json_data = {"content": message}
+    elif "slack" in webhook_url:
+        json_data = {"text": message}
+    else:
+        data = message
     headers = {
         "method": 'POST',
         "Content-Type": "application/json"
         }
 
-    r = requests.post(webhook_url, headers=headers, json=data)
+    r = requests.post(webhook_url, headers=headers, json=json_data, data=data)
     print(r.status_code, r.reason)
 
 
