@@ -113,7 +113,7 @@ while True:
     for jobid, partition, name, user, st, _, nodes, nodelist in squeue():
         alive_jobs.append(jobid)
     for child in children_cpy:
-        if child[1] not in alive_jobs:
+        if child[0] not in alive_jobs:
             send_message(f"{taxa} ScoutKnife nr {child[1]} finished")
             children.remove(child)
 
