@@ -10,6 +10,8 @@ And then It might be smart to the output to a file so:
 
 ## Config
 
+To use the config you have to create a `.config` file in the working directory. Below desibes the different parameters you can add to the config file. There is also an example config file in this repo called `.config_example`
+
 ### webhook_url
 
 Default Value: `None`
