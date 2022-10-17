@@ -140,9 +140,9 @@ while True:
 
     while len(children) < max_size and not completed:
         if start_subprocess(sub_process, children, taxa):
-            send_message(f"Started {taxa}{sub_process} jobid: {children[-1][0]}")
+            send_message(f"Started {taxa}({sub_process}) jobid: {children[-1][0]}")
         else:
-            send_message(f"Failed to start{taxa}{sub_process}")
+            send_message(f"Failed to start {taxa}({sub_process})")
         sub_process += 1
         if sub_process > max_sub_process:
             completed = True
