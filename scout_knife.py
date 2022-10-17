@@ -111,13 +111,14 @@ def start_child(taxa: str, i: int) -> int:
     return new_job
 
 
-def start_subprocess(sub_process: int, children: list, taxa: str):
+def start_subprocess(sub_process: int, children: list, taxa: str) -> bool:
     child_job = start_child(taxa, sub_process)
     if child_job == -1 or str(child_job) in children:
         send_message(f"failed to start job nr {sub_process} with taxa: {taxa}, jobid: {child_job}")
-    else:
-        children.append((str(child_job), sub_process))
-    return
+        return False
+    
+    children.append((str(child_job), sub_process))
+    return True
 
 
 send_message(f"I am PID: {os.getpid()}\nI am cleaning {taxa}")
@@ -139,9 +140,9 @@ while True:
             children.remove(child)
 
     while len(children) < max_size and not completed:
-        start_subprocess(sub_process, children, taxa)
-        send_message(f"Started {taxa}{sub_process} jobid: {children[-1][0]}")
-        sub_process += 1
+        if start_subprocess(sub_process, children, taxa):
+            send_message(f"Started {taxa}{sub_process} jobid: {children[-1][0]}")
+            sub_process += 1
         if sub_process > max_sub_process:
             completed = True
         time.sleep(3)
