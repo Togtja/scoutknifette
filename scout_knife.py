@@ -56,8 +56,8 @@ def exit_kill_children(sig, frame):
     global children
     global completed
     completed = True
-    killed = []
 
+    killed = []
     for _, jobid in children.items():
         killed.append(subprocess.Popen(["scancel", f"{jobid}"]))
     for child in killed:
@@ -151,7 +151,7 @@ while True:
     children_cpy = children
     for jobid, partition, name, user, st, _, nodes, nodelist in squeue():
         alive_jobs.append(jobid)
-    for sub_proc, jobid in children_cpy:
+    for sub_proc, jobid in children_cpy.items():
         if jobid not in alive_jobs:
             send_message(f"{taxa} ScoutKnife nr {sub_proc} finished")
             del children_cpy[sub_proc]
