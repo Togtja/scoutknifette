@@ -111,13 +111,14 @@ def start_child(taxa: str, i: int) -> int:
     return new_job
 
 
-def start_subprocess(sub_process: int, children: dict, taxa: str) -> bool:
+def start_subprocess(sub_process: int, children: dict, taxa: str, alive_jobs: list) -> bool:
     child_job = start_child(taxa, sub_process)
     if child_job == -1:
         return False
     if child_job in children.values():
         return False
-
+    if child_job in alive_jobs:
+        return False
     children[sub_process] = child_job
     return True
 
@@ -129,6 +130,7 @@ c = subprocess.Popen(["perl", "/home/piamer/4Pia/Step1_PartitionSedder.pl", taxa
 c.wait()
 
 send_message(f"{taxa} is clean")
+prev_jobs = []
 
 while True:
     alive_jobs = []
@@ -141,7 +143,7 @@ while True:
             del children_cpy[sub_proc]
 
     while len(children) < max_size and not completed:
-        if start_subprocess(sub_process, children, taxa):
+        if start_subprocess(sub_process, children, taxa, alive_jobs):
             send_message(f"Started {taxa}({sub_process}) jobid: {children[sub_process]}")
         else:
             send_message(f"Failed to start {taxa}({sub_process})")
