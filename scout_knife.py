@@ -132,11 +132,11 @@ def start_subprocess(sub_process: int, children: dict, taxa: str, alive_jobs: li
     child_job = start_child(taxa, sub_process)
     if child_job == -1:
         return False
-    if child_job in children.values():
+    if str(child_job) in children.values():
         return False
-    if child_job in alive_jobs:
+    if str(child_job) in alive_jobs:
         return False
-    children[sub_process] = child_job
+    children[sub_process] = str(child_job)
     return True
 
 
