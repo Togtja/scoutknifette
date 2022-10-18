@@ -148,13 +148,12 @@ prev_jobs = []
 
 while True:
     alive_jobs = []
-    children_cpy = children
     for jobid, partition, name, user, st, _, nodes, nodelist in squeue():
         alive_jobs.append(jobid)
-    for sub_proc, jobid in children_cpy.items():
+    for sub_proc, jobid in list(children.items()):
         if jobid not in alive_jobs:
             send_message(f"{taxa} ScoutKnife nr {sub_proc} finished")
-            del children_cpy[sub_proc]
+            del children[sub_proc]
 
     while len(children) < max_size and not completed:
         if start_subprocess(sub_process, children, taxa, alive_jobs):
