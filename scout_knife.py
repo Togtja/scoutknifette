@@ -63,6 +63,7 @@ def exit_kill_children(sig, frame):
         killed.append(subprocess.Popen(["scancel", f"{jobid}"]))
     for child in killed:
         child.wait()
+    send_message("all batched running has been 'scancel' and I am exiting")
     sys.exit(0)
 
 
