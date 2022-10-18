@@ -11,7 +11,7 @@ taxa = sys.argv[1]
 max_size = 10           # Max cocurrent running children
 sub_process = 1         # starting batch 
 max_sub_process = 100   # To max batch (including)
-children = []           # List of sub_process children
+children = {}           # Dict of sub_process->jobid
 sleep_time = 60*30   # How often to check in on the children in seconds
 webhook_url = None
 completed = False
@@ -111,12 +111,14 @@ def start_child(taxa: str, i: int) -> int:
     return new_job
 
 
-def start_subprocess(sub_process: int, children: list, taxa: str) -> bool:
+def start_subprocess(sub_process: int, children: dict, taxa: str) -> bool:
     child_job = start_child(taxa, sub_process)
-    if child_job == -1 or str(child_job) in children:
+    if child_job == -1:
         return False
-    
-    children.append((str(child_job), sub_process))
+    if child_job in children.values():
+        return False
+
+    children[sub_process] = child_job
     return True
 
 
@@ -133,10 +135,10 @@ while True:
     children_cpy = children
     for jobid, partition, name, user, st, _, nodes, nodelist in squeue():
         alive_jobs.append(jobid)
-    for child in children_cpy:
-        if child[0] not in alive_jobs:
-            send_message(f"{taxa} ScoutKnife nr {child[1]} finished")
-            children.remove(child)
+    for sub_proc, jobid in children_cpy:
+        if jobid not in alive_jobs:
+            send_message(f"{taxa} ScoutKnife nr {sub_proc} finished")
+            del children_cpy[sub_proc]
 
     while len(children) < max_size and not completed:
         if start_subprocess(sub_process, children, taxa):
