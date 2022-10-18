@@ -52,9 +52,23 @@ def exit_soon(sig, frame):
     send_message(f"I am exiting gracefully, as soon as all batches finishes {children}")
 
 
+def exit_kill_children(sig, frame):
+    global children
+    global completed
+    completed = True
+    killed = []
+
+    for _, jobid in children.items():
+        killed.append(subprocess.Popen(["scancel", f"{jobid}"]))
+    for child in killed:
+        child.wait()
+    sys.exit(0)
+
+
 signal.signal(signal.SIGINT, exit_now)
 signal.signal(signal.SIGTERM, exit_now)
 signal.signal(signal.SIGUSR1, exit_soon)
+signal.signal(signal.SIGUSR2, exit_kill_children)
 
 with open(".config", "r") as config_file:
     for config in config_file.readlines():
