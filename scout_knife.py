@@ -8,11 +8,12 @@ import signal
 
 
 taxa = sys.argv[1]
-max_size = 10           # Max cocurrent running children
+max_size = 10           # Max concurrent running children
 sub_process = 1         # starting batch 
 max_sub_process = 100   # To max batch (including)
 children = {}           # Dict of sub_process->jobid
-sleep_time = 60*30   # How often to check in on the children in seconds
+sleep_time = 60*30      # How often to check in on the children in seconds
+start_timer = 10        # How long time to wait before starting the next child process
 webhook_url = None
 completed = False
 
@@ -83,6 +84,8 @@ with open(".config", "r") as config_file:
             max_sub_process = int(val)
         elif conf == "sleep_time":
             sleep_time = int(val)
+        elif conf == "start_timer":
+            start_timer = int(val)
 
 start_nr = sub_process
 
@@ -163,7 +166,7 @@ while True:
         sub_process += 1
         if sub_process > max_sub_process:
             completed = True
-        time.sleep(3)
+        time.sleep(start_timer)
     if len(children) == 0:
         break
 

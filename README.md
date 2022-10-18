@@ -86,3 +86,11 @@ Default value: `1800` (30 minutes), Type: `int`
 Example in `.config`: `sleep_time=1800`
 
 How long in seconds it will sleep in between checks to see if the processes are still running and spawn new once.
+
+### start_timer
+
+Default value: `10`, Type: `int`
+
+Example in `.config`: `start_timer=10`
+
+How long in seconds it will wait before running `sbatch`
