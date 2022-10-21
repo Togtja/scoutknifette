@@ -150,28 +150,39 @@ c.wait()
 send_message(f"{taxa} is clean")
 prev_jobs = []
 
-while True:
-    alive_jobs = []
-    for jobid, partition, name, user, st, _, nodes, nodelist in squeue():
-        alive_jobs.append(jobid)
-    for sub_proc, jobid in list(children.items()):
-        if jobid not in alive_jobs:
-            send_message(f"{taxa} ScoutKnife nr {sub_proc} finished")
-            del children[sub_proc]
 
-    while len(children) < max_size and not completed:
-        if start_subprocess(sub_process, children, taxa, alive_jobs):
-            send_message(f"Started {taxa}({sub_process}) jobid: {children[sub_process]}")
-        else:
-            send_message(f"Failed to start {taxa}({sub_process})")
-        sub_process += 1
-        if sub_process > max_sub_process:
-            completed = True
-        time.sleep(start_timer)
-    if len(children) == 0:
-        break
+def main():
+    global sub_process
+    global completed
+    while True:
+        alive_jobs = []
+        for jobid, partition, name, user, st, _, nodes, nodelist in squeue():
+            alive_jobs.append(jobid)
+        for sub_proc, jobid in list(children.items()):
+            if jobid not in alive_jobs:
+                send_message(f"{taxa} ScoutKnife nr {sub_proc} finished")
+                del children[sub_proc]
 
-    time.sleep(sleep_time)
+        while len(children) < max_size and not completed:
+            if start_subprocess(sub_process, children, taxa, alive_jobs):
+                send_message(f"Started {taxa}({sub_process}) jobid: {children[sub_process]}")
+            else:
+                send_message(f"Failed to start {taxa}({sub_process})")
+            sub_process += 1
+            if sub_process > max_sub_process:
+                completed = True
+            time.sleep(start_timer)
+        if len(children) == 0:
+            break
 
+        time.sleep(sleep_time)
+
+
+try:
+    main()
+except Exception as e:
+    print(sys.exc_info())
+    print(e)
+    sys.exit(1)
 
 send_message(f"All from {start_nr} to {sub_process} {taxa} have been Knife Scouted :) ")
