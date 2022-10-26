@@ -5,6 +5,7 @@ import os
 from typing import Tuple
 import requests  # Need to be pip installed
 import signal
+import traceback
 
 
 taxa = sys.argv[1]
@@ -67,11 +68,6 @@ def exit_kill_children(sig, frame):
     sys.exit(0)
 
 
-signal.signal(signal.SIGINT, exit_now)
-signal.signal(signal.SIGTERM, exit_now)
-signal.signal(signal.SIGUSR1, exit_soon)
-signal.signal(signal.SIGUSR2, exit_kill_children)
-
 with open(".config", "r") as config_file:
     for config in config_file.readlines():
         conf, val = config.split("=")
@@ -113,17 +109,20 @@ def start_child(taxa: str, i: int) -> int:
     sbatch.wait()
     # Wait for the log to update
     time.sleep(5)
+    warned_taxa = []
     for jobid, partition, name, user, st, _, nodes, nodelist in squeue():
         new_job = -1
         if user == os.getlogin():
             print(taxa, "contains", name)
             if name in taxa:
-                print(jobid, ">", new_job)
                 if int(jobid) > new_job:
                     new_job = int(jobid)
                 pass
             else:
-                send_message(f"user: {user} is also running {name} along side of {taxa}, is this intended?")
+                if name not in warned_taxa:
+                    send_message(f"user: {user} is also running {name} along side of {taxa}, is this intended?")
+                else:
+                    warned_taxa.append(name)
 
     # child = subprocess.Popen(["python3", f"example_script.py", str(i)])
     return new_job
@@ -141,19 +140,19 @@ def start_subprocess(sub_process: int, children: dict, taxa: str, alive_jobs: li
     return True
 
 
-send_message(f"I am PID: {os.getpid()}\nI am cleaning {taxa}")
-# Calls the cleaning command
-c = subprocess.Popen(["perl", "/home/piamer/4Pia/Step1_PartitionSedder.pl", taxa])
-# c = subprocess.Popen(["python", "example_clear.py", taxa])
-c.wait()
-
-send_message(f"{taxa} is clean")
-prev_jobs = []
-
 
 def main():
     global sub_process
     global completed
+
+    send_message(f"I am PID: {os.getpid()}\nI am cleaning {taxa}")
+    # Calls the cleaning command
+    c = subprocess.Popen(["perl", "/home/piamer/4Pia/Step1_PartitionSedder.pl", taxa])
+    # c = subprocess.Popen(["python", "example_clear.py", taxa])
+    c.wait()
+
+    send_message(f"{taxa} is clean")
+
     while True:
         alive_jobs = []
         for jobid, partition, name, user, st, _, nodes, nodelist in squeue():
@@ -179,10 +178,13 @@ def main():
 
 
 try:
+    signal.signal(signal.SIGINT, exit_now)
+    signal.signal(signal.SIGTERM, exit_now)
+    signal.signal(signal.SIGUSR1, exit_soon)
+    signal.signal(signal.SIGUSR2, exit_kill_children)
     main()
 except Exception as e:
-    print(sys.exc_info())
-    print(e)
+    print(traceback.format_exc())
     sys.exit(1)
 
 send_message(f"All from {start_nr} to {sub_process} {taxa} have been Knife Scouted :) ")
