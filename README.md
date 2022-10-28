@@ -94,3 +94,9 @@ Default value: `10`, Type: `int`
 Example in `.config`: `start_timer=10`
 
 How long in seconds it will wait before running `sbatch`
+
+How to kill runs:
+kill -12 <pid> Will kill the process and all the jobs that the script created (No other jobs should be cancelled)
+kill -10 <pid> Will eventually killed the process, once it sees that all current jobs are completed (this means it will still be running for a while and reporting, but it will no longer start any new once, and will eventually finish)
+kill -15 <pid>, kill -2 <pid> (same as ctrl+c) will shut it down immediately, however all jobs running will continue to run 
+
